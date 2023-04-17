@@ -1,11 +1,10 @@
 package Homework;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class HomeworkMain {
     public static void main(String[] args) {
         //1)Переписать лямбда-выражения для интерфейсов Checkable,Printable,Producable, StringConcate,Transformable из
-        // домашнего задания и с урока на стандартных функциональных интерфейсах Java.
+        // домашнего задания и с урока s pomoschju стандартных функциональных интерфейсах Java.
 /*
     Napisatj sledujuschie lambdi ispolsuja naschi interface
     1. concatinirowatj stroki a i b; a+b
@@ -16,20 +15,37 @@ public class HomeworkMain {
  */
         StringConcate stringConcate = (a,b) -> Integer.toString(a)+b;
         System.out.println(stringConcate.concat(6,6));  //66
+        //standart funktional interface
+        BiFunction<Integer,Integer,String> stringBiFunction= (a,b) -> Integer.toString(a)+b;
+        System.out.println(stringBiFunction.apply(6,6));  //66
 
         Checkable checkable = s -> s.length() == 3;
         System.out.println(checkable.check("abc"));  //true
         System.out.println(checkable.check("abcd"));  //false
+        //standart funktional interface
+        Predicate<String> predicate= s -> s.length() == 3;
+        System.out.println(predicate.test("abc"));  //true
+        System.out.println(predicate.test("abcd"));  //false
 
         Printable printable = s -> System.out.println("!"+s+"!");
         printable.print("string");  //!string!
+        //standart funktional interface
+        Consumer<String> consumer= s -> System.out.println("!"+s+"!");
+        consumer.accept("string");  //!string!
 
         Transformable transformable = s -> (s.length() == 4) ? "****" : s;
         System.out.println(transformable.modify("abc"));  //abc
         System.out.println(transformable.modify("abcd"));  //****
+        //standart funktional interface
+        Function<String,String>function= s -> (s.length() == 4) ? "****" : s;
+        System.out.println(function.apply("abc"));  //abc
+        System.out.println(function.apply("abcd"));  //****
 
         Producable producable = () -> "Hello World";
         System.out.println(producable.produce());  //Hello World
+        //standart funktional interface
+        Supplier<String> supplier= () -> "Hello World";
+        System.out.println(supplier.get());  //Hello World
 
 
         //2)* Написать метод, принимающий строку, содержащую слова разделенные пробелом и
@@ -40,52 +56,33 @@ public class HomeworkMain {
         //3. при длине слова= 5, изменить все буквы слова на звездочки и вернуть измененную строку
         //(т.е. должен работать таким образом при передаче в него соотвествующих лямбда выражений для каждого случая).
         //Протестировать.
-
+        HomeworkMain homeworkMain= new HomeworkMain();
         String string = "aAa bBbB cCcCc dDdDdD";
 
-        System.out.println(stringLength(string,HomeworkMain::three,HomeworkMain::threeBoolean)); //aaa bBbB cCcCc dDdDdD
-        System.out.println(stringLength(string,HomeworkMain::four,HomeworkMain::fourBoolean));  //aAa BBBB cCcCc dDdDdD
-        System.out.println(stringLength(string,HomeworkMain::five,HomeworkMain::fiveBoolean));  //aAa bBbB ***** dDdDdD
+        Predicate<String>predicate3= s -> s.length() == 3;
+        Function<String,String>function3= String::toLowerCase;//s -> s.toLowerCase();
+        System.out.println(homeworkMain.stringLength(string,function3,predicate3)); //aaa bBbB cCcCc dDdDdD
+
+        Predicate<String>predicate4= s -> s.length() == 4;
+        Function<String,String>function4= String::toUpperCase;//s -> s.toUpperCase();
+        System.out.println(homeworkMain.stringLength(string,function4,predicate4)); //aAa BBBB cCcCc dDdDdD
+
+        Predicate<String>predicate5= s -> s.length() == 5;
+        Function<String,String>function5= s -> "*****";
+        System.out.println(homeworkMain.stringLength(string,function5,predicate5)); //aaa bBbB ***** dDdDdD
     }
-
-
-    public static String stringLength (String str, Function function, Predicate predicate){
-        StringBuilder stringBuilder = new StringBuilder();
+    public String stringLength (String str, Function<String,String> function, Predicate<String> predicate){
         String[] strings = str.split(" ");
 
-        for (String s : strings) {
-            if (predicate.test(s)) {
-                stringBuilder.append(function.apply(s)).append(" ");
-            }else {
-                stringBuilder.append(s).append(" ");
+        for (int i=0; i<strings.length; i++) {
+            if (predicate.test(strings[i])) {
+                strings[i] = function.apply(strings[i]);
             }
         }
-        return stringBuilder.toString();
+        return String.join(" ",strings);
     }
-    public static Object three(Object str){
-        Function<String,String> three = s -> (s.length() == 3) ? s.toLowerCase() : s;
-        return three.apply(str.toString());
-    }
-    public static Object four (Object str){
-        Function<String,String> four = s -> (s.length() == 4) ? s.toUpperCase() : s;
-        return four.apply(str.toString());
-    }
-    public static Object five (Object str){
-        Function<String,String> five = s -> (s.length() == 5) ? "*****" : s;
-        return five.apply(str.toString());
-    }
-    public static Boolean threeBoolean (Object str){
-        Predicate<String> three= s -> s.length() == 3;
-        return three.test(str.toString());
-    }
-    public static Boolean fourBoolean (Object str){
-        Predicate<String> four= s -> s.length() == 4;
-        return four.test(str.toString());
-    }
-    public static Boolean fiveBoolean (Object str){
-        Predicate<String> five= s -> s.length() == 5;
-        return five.test(str.toString());
-    }
+
+
 
 }
 
